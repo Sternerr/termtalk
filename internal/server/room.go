@@ -3,6 +3,7 @@ package server
 import (
 	"net"
 	"fmt"
+	"bytes"
 )
 
 type Room struct {
@@ -29,7 +30,10 @@ func(r *Room) send(from net.Conn, messageBuffer []byte) {
 		}
 
 		sender := from.RemoteAddr().String()
-		msg := append([]byte(sender + ": "), messageBuffer...)
+		trimmedMessageBuffer := bytes.TrimRight(messageBuffer, "\r\n")
+		msg := append([]byte(sender + ": "), trimmedMessageBuffer...)
+		msg = append(msg, '\n')
+
 		_, err := r.users[i].Write(msg)
 		if err != nil {
 			fmt.Println(err.Error())

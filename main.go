@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sternerr/simple-chat-server/internal/server"
+	"github.com/sternerr/termtalk/internal/server"
+	"github.com/sternerr/termtalk/internal/client"
 )
 
 
@@ -28,6 +29,10 @@ func main() {
 
 		server := server.NewServer(port)
 		server.Listen()
+	case "client":
+		port := parseFlag(args[2:], "--port")
+		client := client.NewClient("localhost", port)
+		client.StartClient()
 	default:
 		fmt.Printf("%s is not a command\n", mode)
 		os.Exit(0)
