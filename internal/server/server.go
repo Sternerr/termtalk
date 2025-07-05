@@ -47,8 +47,8 @@ func(s *Server) Listen() {
 	}
 }
 
-func NewServer(port int) *Server {
-	addr := fmt.Sprintf(":%d", port)
+func NewServer(port string) *Server {
+	addr := fmt.Sprintf(":%s", port)
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -56,7 +56,7 @@ func NewServer(port int) *Server {
 	}
 
 	server := Server {
-		listener: l,
+		Listener: l,
 	}
 
 	return &server
