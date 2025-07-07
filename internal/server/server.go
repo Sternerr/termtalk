@@ -8,10 +8,10 @@ import (
 	
 type Server struct {
 	Listener net.Listener
+	Room Room
 }
 
 func(s *Server) Listen() {
-	room := Room {}
 	buffer := make([]byte, 1024)
 
 	for {
@@ -21,8 +21,10 @@ func(s *Server) Listen() {
 			os.Exit(1)
 		}
 		
-		fmt.Println("Client Connected, %s", conn)
-		room.add(conn)
+		s.Room.Add(conn)
+
+		msg := fmt.Sprintf("%s Connected", conn.RemoteAddr())
+		s.Room.BroadcastSystemMessage([]byte(msg))
 	
 		go func() {
 			for {
@@ -31,19 +33,19 @@ func(s *Server) Listen() {
 					fmt.Println(err.Error())
 				}
 
-				room.send(conn, buffer[:numBytesRead])
+				s.Room.Send(conn, buffer[:numBytesRead])
 
 				if numBytesRead == 0 {
 					break
 				}
 			}
 
-			room.remove(conn)			
-			conn.Close()
-			fmt.Println("Client Disconnected, %s", conn)
-		}()
+			s.Room.Remove(conn)			
+			msg := fmt.Sprintf("%s Disconnected", conn.RemoteAddr())
+			s.Room.BroadcastSystemMessage([]byte(msg))
 
-		fmt.Println(room)
+			conn.Close()
+		}()
 	}
 }
 
@@ -57,6 +59,7 @@ func NewServer(port string) *Server {
 
 	server := Server {
 		Listener: l,
+		Room: Room{},
 	}
 
 	return &server

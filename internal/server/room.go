@@ -7,25 +7,25 @@ import (
 )
 
 type Room struct {
-	users []net.Conn
+	Users []net.Conn
 }
 
-func(r *Room) add(c net.Conn) {
-	r.users = append(r.users, c)
+func(r *Room) Add(c net.Conn) {
+	r.Users = append(r.Users, c)
 }
 
 
-func(r *Room) remove(c net.Conn) {
-	for i := 0; i < len(r.users); i += 1 {
-		if r.users[i] == c {
-			r.users = append(r.users[:i], r.users[i+1:]...)
+func(r *Room) Remove(c net.Conn) {
+	for i := 0; i < len(r.Users); i += 1 {
+		if r.Users[i] == c {
+			r.Users = append(r.Users[:i], r.Users[i+1:]...)
 		}
 	}
 }
 
-func(r *Room) send(from net.Conn, messageBuffer []byte) {
-	for i := 0; i < len(r.users); i += 1 {
-		if r.users[i] == from {
+func(r *Room) Send(from net.Conn, messageBuffer []byte) {
+	for i := 0; i < len(r.Users); i += 1 {
+		if r.Users[i] == from {
 			continue
 		}
 
@@ -34,7 +34,20 @@ func(r *Room) send(from net.Conn, messageBuffer []byte) {
 		msg := append([]byte(sender + ": "), trimmedMessageBuffer...)
 		msg = append(msg, '\n')
 
-		_, err := r.users[i].Write(msg)
+		_, err := r.Users[i].Write(msg)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+}
+
+func(r *Room) BroadcastSystemMessage(messageBuffer []byte) {
+	trimmedMessageBuffer := bytes.TrimRight(messageBuffer, "\r\n")
+	msg := append([]byte("[server]: "), trimmedMessageBuffer...)
+	msg = append(msg, '\n')
+
+	for i := 0; i < len(r.Users); i += 1 {
+		_, err := r.Users[i].Write(msg)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
