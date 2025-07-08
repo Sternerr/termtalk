@@ -7,17 +7,20 @@ import (
 )
 
 type Room struct {
-	Users []net.Conn
+	Users []User
 }
 
 func(r *Room) Add(c net.Conn) {
-	r.Users = append(r.Users, c)
+	user := User{
+		Conn: c,
+	}
+	r.Users = append(r.Users, user)
 }
 
 
 func(r *Room) Remove(c net.Conn) {
 	for i := 0; i < len(r.Users); i += 1 {
-		if r.Users[i] == c {
+		if r.Users[i].Conn == c {
 			r.Users = append(r.Users[:i], r.Users[i+1:]...)
 		}
 	}
@@ -25,7 +28,7 @@ func(r *Room) Remove(c net.Conn) {
 
 func(r *Room) Send(from net.Conn, messageBuffer []byte) {
 	for i := 0; i < len(r.Users); i += 1 {
-		if r.Users[i] == from {
+		if r.Users[i].Conn == from {
 			continue
 		}
 
@@ -34,7 +37,7 @@ func(r *Room) Send(from net.Conn, messageBuffer []byte) {
 		msg := append([]byte(sender + ": "), trimmedMessageBuffer...)
 		msg = append(msg, '\n')
 
-		_, err := r.Users[i].Write(msg)
+		_, err := r.Users[i].Conn.Write(msg)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -47,7 +50,7 @@ func(r *Room) BroadcastSystemMessage(messageBuffer []byte) {
 	msg = append(msg, '\n')
 
 	for i := 0; i < len(r.Users); i += 1 {
-		_, err := r.Users[i].Write(msg)
+		_, err := r.Users[i].Conn.Write(msg)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

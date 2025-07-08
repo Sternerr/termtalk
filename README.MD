@@ -17,7 +17,7 @@ go install github.com/sternerr/TermTalk@latest
 termtalk host --port <port>
 
 # Running a client
-termtalk client --port <port> 
+termtalk client --host <host> --port <port> 
 ```
 and start chatting
 
