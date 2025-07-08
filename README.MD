@@ -2,7 +2,7 @@
 A command-line chat server built with Go. TermTalk gets you chatting fast -- with no external dependencies and minimal setup.
 
 ## Why TermTalk?
-Sometimes you just want to chat — no accounts, no web browser, no cloud, no clutter. TermTalk is a clean, command-line chat server that runs locally and lets you exchange messages instantly. No setup, no tracking, no third-party services.
+Sometimes you just want to chat — no accounts, no web browser, no cloud, no clutter. TermTalk is a clean, self-hosted, command-line chat server that runs locally and lets you exchange messages instantly. No tracking, no third-party services.
 
 ## Quick Start
 
